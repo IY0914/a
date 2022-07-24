@@ -1,16 +1,16 @@
 /*
 	Game.cpp
-	�Q�[���ōs�����ۂ̏������Ăяo�����߁A���ۂɃN���X���֏������L�q���邽�߂̃t�@�C���B
-	���̃t�@�C���ɃQ�[���̏������������āA�Q�[������낤�I
+	ゲームで行う実際の処理を呼び出すため、実際にクラス内へ処理を記述するためのファイル。
+	このファイルにゲームの処理を実装して、ゲームを作ろう！
 
-	�쐬�ҁ@�F�@�x��@�a��
-	�쐬���@�F�@2021/03/15
+	作成者　：　堀川　和雅
+	作成日　：　2021/03/15
 */
 
-#include <DxLib.h>						//	������ł��g�����߁ADxLib.h���C���N���[�h���Ă���
+#include <DxLib.h>						//	こちらでも使うため、DxLib.hをインクルードしておく
 #include "Game.h"
 
-//	�R���X�g���N�^�ƌĂ΂��֐�
+//	コンストラクタと呼ばれる関数
 Game::Game() :
 	sceneID(SceneID::PlayScene),
 	screenWidth(0),
@@ -24,40 +24,40 @@ Game::Game() :
 	
 }
 
-//	�f�X�g���N�^�ƌĂ΂��֐�
+//	デストラクタと呼ばれる関数
 Game::~Game()
 {
 	
 }
 
 
-//	�Q�[���̏��������s���֐�
+//	ゲームの初期化を行う関数
 void Game::Initialize()
 {
-	//�eScene����Initialize�Ăяo������
+	//各SceneからInitialize呼び出し準備
 	titleScene.Initialize(screenWidth, screenHeight);
 	playScene.Initialize(screenWidth, screenHeight);
 	resultScene.Initialize(screenWidth, screenHeight);
 
 }
 
-//	�Q�[���̍X�V�������s���֐�
+//	ゲームの更新処理を行う関数
 void Game::Update()
 {
 	
-	//�߂�������(old)
+	//過ぎた時間(old)
 	oldTime = nowTime;
 
-	//���ݎ���(now)
+	//現在時間(now)
 	nowTime = GetNowHiPerformanceCount();
 
-	//�o�ߎ���(deltaTime)
+	//経過時間(deltaTime)
 	deltaTime = (float)((nowTime - oldTime) / 1000000.0f);
 
-	//Scene�؂�ւ��p�t���O�ϐ�bool�錾
+	//Scene切り替え用フラグ変数bool宣言
 	bool changeSceneFlag = false;
 
-	//�X�V�J�n����
+	//更新開始処理
 	if (!firstWait && deltaTime < 1.0f)
 	{
 		firstWait = true;
@@ -67,8 +67,8 @@ void Game::Update()
 		return;
 	}
 
-	//�eScene�̍X�V����(Update)
-	//Scene�I������AScene����`�F���W�������󂯎��(true)
+	//各Sceneの更新処理(Update)
+	//Scene終了次第、Sceneからチェンジ処理を受け取る(true)
 	switch (sceneID)
 	{
 	case Game::SceneID::TitleScene:
@@ -86,8 +86,8 @@ void Game::Update()
 	
 	}
 
-	//�eScene�̏����ݒ�Initialize���Ăяo��
-	//�y�я����ݒ�ϐ����f
+	//各Sceneの初期設定Initializeを呼び出し
+	//及び初期設定変数反映
 	if (changeSceneFlag)
 	{
 		switch (sceneID)
@@ -113,11 +113,11 @@ void Game::Update()
 	
 }
 
-//	�Q�[���̕`����s���֐��BDraw�Ə����ꍇ������
+//	ゲームの描画を行う関数。Drawと書く場合もある
 void Game::Render()
 {
 	
-	//�eScene�̕`�揈��
+	//各Sceneの描画処理
 	switch (sceneID)
 	{
 	case Game::SceneID::TitleScene:
@@ -131,13 +131,13 @@ void Game::Render()
 		break;
 	}
 
-	//�����`��E��
-	DrawFormatString(screenWidth - 170, screenHeight - 20, GetColor(255, 255, 255), "�A�N�V�����Q�[���J��");
+	//文字描画右下
+	DrawFormatString(screenWidth - 170, screenHeight - 20, GetColor(255, 255, 255), "アクションゲーム開発");
 
-	//	�Q�[���̕`�揈���I���I
+	//	ゲームの描画処理終了！
 }
 
-//	�Q�[���̏I���������s���֐��B����������K�v�ȏꍇ�iRelease�֐��Ȃǂ��Ăяo���j�́A���̊֐����ŏ�������
+//	ゲームの終了処理を行う関数。解放処理が必要な場合（Release関数などを呼び出す）は、この関数内で処理する
 void Game::Finalize()
 {
 	
@@ -145,22 +145,25 @@ void Game::Finalize()
 
 void Game::SetScreenSize(int width, int height)
 {
-	//�X�N���[���T�C�Y��WinMain.cpp���擾
+	//スクリーンサイズをWinMain.cppより取得
 	screenWidth = width;
 	screenHeight = height;
 }
 
 void Game::SetGameSystemObjects(GameSystemObjects* pObj)
 {
-	//�O���t�@�C�����擾
+	//外部ファイルより取得
 	pGameSystem =  pObj;
 
-	//�e�V�[�����f
+	//各シーン反映
 	titleScene.SetGameSystemObject(pObj);
 	playScene.SetGameSystemObject(pObj);
 	resultScene.SetGameSystemObject(pObj);
 }
 
-
+void Game::GetCharacterPosition()
+{
+	Character.getPosition(x,y);
+}
 
 
